@@ -1,8 +1,9 @@
 import React from 'react';
-import { pure } from 'recompose';
 import { Link } from 'react-router-dom';
 import { socketConnect } from 'socket.io-react';
 import styled from 'styled-components';
+
+import { supportedStocks } from '../config/globals';
 
 const Stock = styled(({ className, children, stock, defaultValue }) => (
   <Link to={`/${stock}`}>
@@ -15,26 +16,31 @@ const Stock = styled(({ className, children, stock, defaultValue }) => (
 `;
 
 @socketConnect
-@pure
-export default class Main extends React.Component {
+export default class StockDashboard extends React.Component {
   static propTypes = {};
   static defaultProps = {};
+  state = {
+    stocks: {},
+  }
 
-  componentDidMount(){
+  async componentDidMount(){
     const { socket } = this.props;
-    socket.on('updateStock', (data) => {
-      alert(data);
+    socket.on('updateStocks', (data) => {
+      this.setState({ stocks: data });
     });
+    const data = await fetch('/getStocks').then((res) => res.json());
+    this.setState({ stocks: data });
   }
 
   render(){
+    const { stocks } = this.state;
     return (
       <div>
-        <Stock stock='AAPL' defaultValue='0'></Stock>
-        <Stock stock='ABC' defaultValue='0'></Stock>
-        <Stock stock='MSFT' defaultValue='0'></Stock>
-        <Stock stock='TSLA' defaultValue='0'></Stock>
-        <Stock stock='F' defaultValue='0'></Stock>
+        {supportedStocks.map((stock) => (
+          <Stock key={stock} stock={stock} defaultValue='Loading...'>
+            {stocks[stock]}
+          </Stock>
+        ))}
       </div>
     );
   }
