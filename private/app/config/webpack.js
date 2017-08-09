@@ -19,7 +19,7 @@ const config = {
   node: { fs: __NODE__ },
   entry: {},
   watch: __LOCAL__,
-  externals: (__NODE__) ? [nodeExternals()] : [],
+  externals: (__NODE__) ? ['debug', nodeExternals()] : [],
   resolve: { extensions: ['.js', '.jsx'] },
   output: {
     filename: '[name].js',

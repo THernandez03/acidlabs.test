@@ -1,11 +1,14 @@
 import React from 'react';
+import io from 'socket.io-client';
 import { pure } from 'recompose';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { SocketProvider } from 'socket.io-react';
+
+import Main from './components/Main';
+
+const socket = io();
 
 @pure
-/**
- * Main function
- * @type {Object}
- */
 export default class App extends React.Component {
   static propTypes = {};
   static defaultProps = {};
@@ -19,7 +22,14 @@ export default class App extends React.Component {
    */
   render(){
     return (
-      <span>Test</span>
+      <SocketProvider socket={socket}>
+        <BrowserRouter>
+          <Switch>
+            <Route path='/:stock' component={Main}/>
+            <Route exact path='/' component={Main}/>
+          </Switch>
+        </BrowserRouter>
+      </SocketProvider>
     );
   }
 }
