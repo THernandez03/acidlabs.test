@@ -4,6 +4,19 @@ import socketIO from 'socket.io';
 import redis from 'redis';
 import moment from 'moment';
 
+class RandomError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+    this.isRandom = true;
+    if(typeof Error.captureStackTrace === 'function'){
+      Error.captureStackTrace(this, this.constructor);
+    }else{
+      this.stack = (new Error(message)).stack;
+    }
+  }
+}
+
 const index = readFileSync('./public/server/views/index.html', 'utf8');
 
 const server = http.createServer((req, res) => {
@@ -15,21 +28,22 @@ const client = redis.createClient();
 
 const requestData = () => (
   new Promise((resolve, reject) => {
-    if(Math.random() < 0.1){
-      throw new Error('How unfortunate! The API Request Failed');
+    if(Math.random() < 1){
+      reject(new RandomError('How unfortunate! The API Request Failed'));
     }
-    http.request({
+    const req = http.request({
       host: 'finance.google.com',
       path: '/finance/info?client=ig&q=AAPL,ABC,MSFT,TSLA,F',
     }, (res) => {
-      let str = '';
+      let data = '';
       res.on('data', (chunk) => {
-        str += chunk;
+        data += chunk;
       });
       res.on('end', () => {
-        resolve(JSON.parse(str.slice(4)));
+        resolve(JSON.parse(data.slice(4)));
       });
-    }).end();
+    });
+    req.end();
   })
 )
 
@@ -45,6 +59,5 @@ const requestWithCache = withCache(requestData);
 client.on('connect', () => {
   server.listen(3000, async () => {
     console.log('Server listening on localhost:3000');
-    requestWithCache();
   });
 });
