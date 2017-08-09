@@ -26,33 +26,28 @@ const server = http.createServer((req, res) => {
 const io = socketIO(server);
 const client = redis.createClient();
 
-const requestData = () => (
-  new Promise((resolve, reject) => {
-    if(Math.random() < 1){
-      reject(new RandomError('How unfortunate! The API Request Failed'));
-    }
-    const req = http.request({
-      host: 'finance.google.com',
-      path: '/finance/info?client=ig&q=AAPL,ABC,MSFT,TSLA,F',
-    }, (res) => {
-      let data = '';
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      res.on('end', () => {
-        resolve(JSON.parse(data.slice(4)));
-      });
-    });
-    req.end();
-  })
-)
+const requestData = () => {
+  if(Math.random() < 0.1){
+    throw new RandomError('How unfortunate! The API Request Failed');
+  }
+  return fetch('http://finance.google.com/finance/info?client=ig&q=AAPL,ABC,MSFT,TSLA,F', {
+    headers: { 'Content-Type': 'text/plain' },
+    method: 'GET',
+  }).then((res) => res.text())
+    .then((data) => {
+      return JSON.parse(data.slice(4));
+    })
+  ;
+};
 
 const withCache = (request) => async () => {
-  (await request()).forEach((stock) => {
+  const data = await request();
+  data.forEach((stock) => {
     const { t: stockName } = stock;
-    client.hset(stockName, moment().unix(), JSON.stringify(stock))
-  })
-}
+    client.hset(stockName, moment().unix(), JSON.stringify(stock));
+  });
+  return data;
+};
 
 const requestWithCache = withCache(requestData);
 
