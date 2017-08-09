@@ -1,0 +1,21 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current",
+        "browsers": ["> 2%", "not OperaMini all"]
+      }
+    }],
+    "react",
+    "stage-1",
+  ],
+  "plugins": [
+    "transform-runtime",
+    "transform-decorators-legacy",
+    "transform-inline-environment-variables",
+    ["transform-react-remove-prop-types", {
+      "removeImport": true,
+      "ignoreFilenames": ["node_modules"]
+    }],
+  ],
+}

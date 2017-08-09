@@ -1,0 +1,25 @@
+{
+  "plugins": [
+    "stylelint-no-unsupported-browser-features"
+  ],
+  "rules": {
+    "at-rule-empty-line-before": ["never", {
+      "ignoreAtRules": ["font-face"]
+    }],
+    "block-opening-brace-space-before": "never",
+    "color-hex-length": "long",
+    "declaration-block-semicolon-space-before": null,
+    "declaration-colon-newline-after": null,
+    "length-zero-no-unit": null,
+    "number-leading-zero": "never",
+    "rule-empty-line-before": null,
+    "selector-list-comma-newline-after": null,
+    "selector-pseudo-class-no-unknown": [true, {
+      "ignorePseudoClasses": ["global"]
+    }],
+    "shorthand-property-no-redundant-values": null,
+    "plugin/no-unsupported-browser-features": [true, {
+      "browsers": ["> 2%", "not OperaMini all"]
+    }]
+  }
+}
