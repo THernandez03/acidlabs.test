@@ -113,9 +113,10 @@ const server = http.createServer(async (req, res) => {
   }
 });
 const io = socketIO(server);
+const port = process.env.PORT || 3000;
 
-server.listen(process.env.PORT || 3000, async() => {
-  console.log('Server listening on localhost:3000');
+server.listen(port, async() => {
+  console.log(`Server listening on ${port}`);
 
   let stockStatus = getStockStatus().status;
   const getValuesWithDiff = withDiff(getValues);
