@@ -12,6 +12,7 @@
   },
   "license": "",
   "dependencies": {
+    "babel-promisify": "^1.0.0",
     "moment": "^2.18.1",
     "redis": "^2.8.0",
     "socket.io": "^2.0.3",
