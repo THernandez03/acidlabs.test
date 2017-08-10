@@ -10,7 +10,7 @@ const index = readFileSync('./public/server/views/index.html', 'utf8');
 const client = redis.createClient();
 
 const requestData = () => {
-  if(Math.random() < 0){
+  if(Math.random() < 0.1){
     throw new RandomError('How unfortunate! The API Request Failed');
   }
   return fetch(`http://finance.google.com/finance/info?client=ig&q=${supportedStocks.join()}`, {
@@ -34,9 +34,9 @@ const toRedis = (request) => async () => {
 
 const parseValues = (request) => async () => {
   const data = await request();
-  return data.reduce((current, { t: stock, l: value }) => ({
+  return data.reduce((current, { t: stock, l: value, lt_dts: date }) => ({
     ...current,
-    [stock]: value,
+    [stock]: { value, date },
   }), {});
 };
 const parseHistoryValues = (request) => (stock) => (
@@ -44,10 +44,10 @@ const parseHistoryValues = (request) => (stock) => (
     await request();
     client.hgetall(stock, (err, data) => {
       if(err){ return reject(new Error(err)); }
-      return resolve(data.reduce((current, { t: stock, l: value }) => ({
-        ...current,
-        [stock]: value,
-      }), {}));
+      return resolve(Object.values(data).reduce((current, next) => {
+        const { t: stock, l: value, lt_dts: date } = JSON.parse(next);
+        return [...current, { date, value }];
+      }, []));
     });
   })
 );
@@ -57,7 +57,7 @@ const withDiff = (request) => {
   return async () => {
     const data = await request();
     const changedData = Object.entries(data)
-      .filter(([key, value]) => lastUpdates[key] !== value)
+      .filter(([key, { value }]) => (lastUpdates[key] || {}).value !== value)
       .reduce((current, [key, value]) => ({ ...current, [key]: value }), {})
     ;
     lastUpdates = data;
@@ -94,6 +94,7 @@ client.on('connect', () => {
 
     const getValuesWithDiff = withDiff(getValues);
 
+    await getValuesWithDiff();
     setInterval(async () => {
       const { isChanged, data } = await getValuesWithDiff();
       if(isChanged){

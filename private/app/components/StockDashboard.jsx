@@ -38,7 +38,7 @@ export default class StockDashboard extends React.Component {
       <div>
         {supportedStocks.map((stock) => (
           <Stock key={stock} stock={stock} defaultValue='Loading...'>
-            {stocks[stock]}
+            {stocks[stock] && stocks[stock].value}
           </Stock>
         ))}
       </div>
