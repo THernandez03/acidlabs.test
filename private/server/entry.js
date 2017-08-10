@@ -2,6 +2,7 @@ import http from 'http';
 import { readFileSync } from 'fs';
 import socketIO from 'socket.io';
 import redis from 'redis';
+import moment from 'moment';
 
 import RandomError from './RandomError';
 import { supportedStocks } from '../app/config/globals';
@@ -71,6 +72,17 @@ const withDiff = (request) => {
 const getValues = parseValues(toRedis(requestData));
 const getHistoryValues = parseHistoryValues(toRedis(requestData));
 
+const getStockStatus = () => {
+  // Opens: 14:30
+  // Closes: 21:00
+  const currentTime = moment().utc();
+  const HH = currentTime.hours();
+  const MM = currentTime.minutes();
+  return {
+    status: !!((HH > 14 && MM > 30) && HH < 21),
+  };
+};
+
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
   const [base, stock] = url.split('/').slice(1);
@@ -81,6 +93,9 @@ const server = http.createServer(async (req, res) => {
   }else if(method === 'GET' && base === 'getStocks'){
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(await getValues()));
+  }else if(method === 'GET' && base === 'getStockStatus'){
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(getStockStatus()));
   }else{
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(index);
@@ -88,18 +103,22 @@ const server = http.createServer(async (req, res) => {
 });
 const io = socketIO(server);
 
-client.on('connect', () => {
-  server.listen(3000, async() => {
-    console.log('Server listening on localhost:3000');
+server.listen(3000, async() => {
+  console.log('Server listening on localhost:3000');
 
-    const getValuesWithDiff = withDiff(getValues);
+  let stockStatus = getStockStatus().status;
+  const getValuesWithDiff = withDiff(getValues);
 
-    await getValuesWithDiff();
-    setInterval(async () => {
-      const { isChanged, data } = await getValuesWithDiff();
-      if(isChanged){
-        io.sockets.emit('updateStocks', data);
-      }
-    }, 2500);
-  });
+  await getValuesWithDiff();
+  setInterval(async () => {
+    const { isChanged, data } = await getValuesWithDiff();
+    const { status } = getStockStatus();
+    if(isChanged){
+      io.sockets.emit('updateStocks', data);
+    }
+    if(status !== stockStatus){
+      stockStatus = status;
+      io.sockets.emit('updateStockStatus', status);
+    }
+  }, 2500);
 });

@@ -4,6 +4,7 @@ import { socketConnect } from 'socket.io-react';
 import styled from 'styled-components';
 
 import { supportedStocks } from '../config/globals';
+import StockStatus from './StockStatus';
 
 const Stock = styled(({ className, children, stock, defaultValue }) => (
   <Link to={`/${stock}`}>
@@ -36,6 +37,7 @@ export default class StockDashboard extends React.Component {
     const { stocks } = this.state;
     return (
       <div>
+        <StockStatus/>
         {supportedStocks.map((stock) => (
           <Stock key={stock} stock={stock} defaultValue='Loading...'>
             {stocks[stock] && stocks[stock].value}

@@ -9,11 +9,11 @@
 - [x] API: http://finance.google.com/finance/info?client=ig&q=AAPL,ABC,MSFT,TSLA,F
 
 ## Requerimientos:
-- [ ] La idea sera mostrar 5 stocks al mismo tiempo (AAPL, ABC, MSFT, TSLA, F) y actualizar a traves de websockets los resultados cada vez que cambian.
+- [x] La idea sera mostrar 5 stocks al mismo tiempo (AAPL, ABC, MSFT, TSLA, F) y actualizar a traves de websockets los resultados cada vez que cambian.
 
-- [ ] Si el mercado esta cerrado, informar la usuario que no se va a actualizar mas hasta la proxima apertura.
+- [x] Si el mercado esta cerrado, informar la usuario que no se va a actualizar mas hasta la proxima apertura.
 
-- [ ] Cada stock debera tener una vista adicional, esta vista, presentara el historico de precios de dicho stock que tiene la app en una tabla con los valores, esta tabla tambien debera actualizarse e ir agregando los precios a medida que el servicio informe que se actualizaron.
+- [x] Cada stock debera tener una vista adicional, esta vista, presentara el historico de precios de dicho stock que tiene la app en una tabla con los valores, esta tabla tambien debera actualizarse e ir agregando los precios a medida que el servicio informe que se actualizaron.
 
 - [x] La data debera ser guardada en Redis, usando Hashes para cada stock y el timestamp (unix) para cada transaccion guardada.
 

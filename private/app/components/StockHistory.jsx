@@ -1,12 +1,12 @@
 import React from 'react';
 import { socketConnect } from 'socket.io-react';
 
+import StockStatus from './StockStatus';
+
 @socketConnect
 export default class StockHistory extends React.Component {
-  static propTypes = {
-  };
-  static defaultProps = {
-  };
+  static propTypes = {};
+  static defaultProps = {};
   state = {
     stocks: [],
   }
@@ -27,6 +27,7 @@ export default class StockHistory extends React.Component {
     const { stocks } = this.state;
     return (
       <div>
+        <StockStatus/>
         {stocks.map(({ date, value }, index) => (
           <h1 key={index}>{date} - {value}</h1>
         ))}
