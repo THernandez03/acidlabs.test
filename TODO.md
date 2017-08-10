@@ -17,7 +17,7 @@
 
 - [x] La data debera ser guardada en Redis, usando Hashes para cada stock y el timestamp (unix) para cada transaccion guardada.
 
-- [ ] La API debera simular un 10% rate de errores usando el siguiente codigo:
+- [x] La API debera simular un 10% rate de errores usando el siguiente codigo:
 
 `if (Math.rand(0, 1) < 0.1) throw new Error('How unfortunate! The API Request Failed')`
 

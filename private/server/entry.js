@@ -11,20 +11,27 @@ const index = readFileSync('./public/server/views/index.html', 'utf8');
 const client = redis.createClient();
 
 const requestData = () => {
-  if(Math.random() < 0.1){
-    throw new RandomError('How unfortunate! The API Request Failed');
+  try{
+    if(Math.random() < 0.1){
+      throw new RandomError('How unfortunate! The API Request Failed');
+    }
+    return fetch(`http://finance.google.com/finance/info?client=ig&q=${supportedStocks.join()}`, {
+      headers: { 'Content-Type': 'text/plain' },
+      method: 'GET',
+    })
+      .then((res) => res.text())
+      .then((data) => JSON.parse(data.slice(4)))
+    ;
+  }catch({ isRandom }){
+    if(isRandom){
+      console.log('Retrying...');
+      requestData();
+    }
   }
-  return fetch(`http://finance.google.com/finance/info?client=ig&q=${supportedStocks.join()}`, {
-    headers: { 'Content-Type': 'text/plain' },
-    method: 'GET',
-  })
-    .then((res) => res.text())
-    .then((data) => JSON.parse(data.slice(4)))
-  ;
 };
 
 const toRedis = (request) => async () => {
-  const data = await request();
+  const data = (await request()) || [];
   data.forEach((stock) => {
     const { t: stockName, lt_dts: lastUpdate } = stock;
     const lastUpdateUnix = Math.round(+new Date(lastUpdate) / 1000);
