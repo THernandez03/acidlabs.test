@@ -54,8 +54,8 @@ const parseHistoryValues = (request) => (stock) => (
       if(err){ return reject(new Error(err)); }
       return resolve(Object.values(data).reduce((current, next) => {
         const { t: stock, l: value, lt_dts: date } = JSON.parse(next);
-        return [...current, { date, value }];
-      }, []));
+        return { ...current, [date]: value };
+      }, {}));
     });
   })
 );
