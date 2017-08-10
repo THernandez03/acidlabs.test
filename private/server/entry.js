@@ -3,12 +3,14 @@ import { readFileSync } from 'fs';
 import socketIO from 'socket.io';
 import redis from 'redis';
 import moment from 'moment';
+import st from 'st';
 
 import RandomError from './RandomError';
-import { supportedStocks } from '../app/config/globals';
+import { supportedStocks, redisUrl } from '../app/config/globals';
 
 const index = readFileSync('./public/server/views/index.html', 'utf8');
-const client = redis.createClient();
+const client = redis.createClient(redisUrl);
+const mount = st({ path: './public/app/', url: '/assets' });
 
 const requestData = () => {
   try{
@@ -103,6 +105,8 @@ const server = http.createServer(async (req, res) => {
   }else if(method === 'GET' && base === 'getStockStatus'){
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(getStockStatus()));
+  }else if(method === 'GET' && base === 'assets'){
+    mount(req, res);
   }else{
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(index);
@@ -110,7 +114,7 @@ const server = http.createServer(async (req, res) => {
 });
 const io = socketIO(server);
 
-server.listen(3000, async() => {
+server.listen(process.env.PORT || 3000, async() => {
   console.log('Server listening on localhost:3000');
 
   let stockStatus = getStockStatus().status;

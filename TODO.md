@@ -23,4 +23,4 @@
 
 La idea es que si se presenta este error, se vuelva a intentar la llamada las veces que sea necesario. Se debera capturar SOLAMENTE este error para los reintentos, si existe otro error (ej: se cayo el api) debera manejarse de otra manera (informandole al usuario la ultima actualizacion, que no existe conexion con el api, etc).
 
-- [ ] La app debera estar en Heroku (existe un tier gratis de Redis para usar su servicio, de lo contrario Redislabs tambien cuenta con un tier gratis como servicio).
+- [x] La app debera estar en Heroku (existe un tier gratis de Redis para usar su servicio, de lo contrario Redislabs tambien cuenta con un tier gratis como servicio).
