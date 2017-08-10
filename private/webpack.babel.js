@@ -1,4 +1,4 @@
-import promisify from 'babel-promisify';
+import { promisify } from 'util';
 import { fork } from 'child_process';
 import { join, basename } from 'path';
 import { writeFile } from 'fs';
