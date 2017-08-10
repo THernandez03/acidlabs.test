@@ -41,7 +41,7 @@ const BackButton = styled(({ className }) => (
 
 const StockRegistry = styled(({ className, timestamp, value }) => (
   <div className={className}>
-    <span>{moment(timestamp).format('LLLL')}</span>
+    <span>{moment(timestamp).utc().format('LLLL')}</span>
     <h3>{value}</h3>
   </div>
 ))`
@@ -96,8 +96,9 @@ export default class StockHistory extends React.Component {
     return (
       <StockWrapper>
         <StockStatus/>
+        <BackButton/>
         {(timestamps.length) ?
-          timestamps.map((timestamp, index) => (
+          timestamps.sort().reverse().map((timestamp, index) => (
             <StockRegistry
               key={index}
               timestamp={timestamp}

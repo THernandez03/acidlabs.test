@@ -16,6 +16,7 @@ const StockWrapper = styled(({ className, children }) => (
   align-items: center;
   flex-direction: column;
   width: 500px;
+  margin-top: 25px;
 `;
 
 const Stock = styled(({ className, children, stock }) => (
@@ -60,7 +61,7 @@ export default class StockDashboard extends React.Component {
     const data = await fetch('/getStocks').then((res) => res.json());
     this.setState({ stocks: data });
     socket.on('updateStocks', (data) => {
-      this.setState({ stocks: data });
+      this.setState({ stocks: { ...this.state.stocks, ...data } });
     });
   }
 

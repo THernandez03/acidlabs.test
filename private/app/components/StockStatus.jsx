@@ -4,45 +4,40 @@ import styled from 'styled-components';
 
 const StockStatusWrapper = styled(({ className, status }) => (
   <div className={className}>
-    {(status) ?
-      <span>Opened</span> :
-      <div>
-        <i className='fa fa-exclamation-triangle' aria-hidden='true'></i>
-        <span>Closed</span>
-        <span>Data will not be updated until stock market opens again</span>
-      </div>
-    }
+    <i className='fa fa-exclamation-triangle' aria-hidden='true'></i>
+    <span>Closed</span>
+    <span>Data will not be updated until stock market opens again</span>
   </div>
 ))`
-  ${({ status }) => (
-    (status) ? `
-      opacity: 0;
-      pointer-events: none;
-    ` : `
-      opacity: 1;
-      pointer-events: all;
-    `
-  )};
+  opacity: 0;
+  pointer-events: none;
   background: #fcf8e3;
   border: 1px solid #faebcc;
   color: #8a6d3b;
-  padding: 10px 25px;
-  margin: 25px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
   border-radius: 3px;
   box-sizing: border-box;
-  transition: opacity .5s;
   width: 100%;
+  transition: all .5s linear .5s;
+  padding: 0 25px;
+  margin: 0;
+  height: 0;
 
-  & div{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  ${({ status }) => (!status && `
+    opacity: 1;
+    pointer-events: all;
+    height: auto;
+    padding: 10px 25px;
+    margin: 25px 0;
+  `)};
 
-    & i{
-      margin: 5px 0px;
-      font-size 15px;
-    }
+  & i{
+    margin: 5px 0px;
+    font-size 15px;
   }
 `;
 
@@ -51,7 +46,7 @@ export default class StockStatus extends React.Component {
   static propTypes = {};
   static defaultProps = {};
   state = {
-    status: false,
+    status: true,
   }
 
   async componentDidMount(){

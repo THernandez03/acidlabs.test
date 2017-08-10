@@ -82,13 +82,16 @@ const getValues = parseValues(toRedis(requestData));
 const getHistoryValues = parseHistoryValues(toRedis(requestData));
 
 const getStockStatus = () => {
-  // Opens: 14:30
-  // Closes: 21:00
-  const currentTime = moment().utc();
+  // Opens: 10:30
+  // Closes: 16:00
+  const currentTime = moment();
   const HH = currentTime.hours();
   const MM = currentTime.minutes();
   return {
-    status: !!((HH > 14 && MM > 30) && HH < 21),
+    status: !!(
+      HH <= 16 &&
+      (HH > 10 || (HH === 10 && MM >= 30))
+    ),
   };
 };
 
@@ -125,7 +128,8 @@ server.listen(port, async() => {
   setInterval(async () => {
     const { isChanged, data } = await getValuesWithDiff();
     const { status } = getStockStatus();
-    if(isChanged){
+
+    if(status && isChanged){
       io.sockets.emit('updateStocks', data);
     }
     if(status !== stockStatus){
